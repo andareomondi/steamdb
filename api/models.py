@@ -12,7 +12,7 @@ class SteamGame(models.Model):
 
     def __str__(self):
         return self.name
-class SteamGameDetails(models.Model):
+class SteamGameDetail(models.Model):
     """
     A model representing the details of a steam game. Linked to the SteamGame model through a ForeignKey.
     This model will contain all the details we can get from the Steam API for a specific game.
