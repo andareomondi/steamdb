@@ -1,5 +1,5 @@
 from django.shortcuts import render
-import .models import SteamGame, SteamGameDetail
+from .models import SteamGame, SteamGameDetail
 import requests
 import json
 from django.http import HttpResponse
@@ -33,7 +33,7 @@ def fetch_games(request):
         for app in app_list:
             appid = app["appid"]
             name = app["name"]
-            // Check if the game already exists in the database
+            # Check if the game already exists in the database
             if not SteamGame.objects.filter(appid=appid).exists():
                 SteamGame.objects.create(appid=appid, name=name)
         return HttpResponse("Games fetched and stored successfully.") 
