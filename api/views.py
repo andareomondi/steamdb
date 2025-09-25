@@ -27,7 +27,7 @@ def fetch_games(request):
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
-        // Parsing the data to a python dictionary
+        # Parsing the data to a python dictionary
         data_dict = json.loads(data)
         app_list = data_dict["applist"]["apps"]
         for app in app_list:

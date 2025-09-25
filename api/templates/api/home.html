@@ -8,9 +8,10 @@
 <body>
 <h1>Welcome to the Game Library</h1>
 {% for game in games %}
+{{forloop.counter}}.
   <div class="game-card">
-    <h2>{{ game.title }}</h2>
-    <p>{{ game.description }}</p>
+    <h4>{{ game.name }}</h4>
+    <p>Game id: {{ game.appid }}</p>
     <small>{% if game.has_details %}The game has details{% else %}This game has no more details{% endif %}</small>
   </div>
 {% endfor %}
