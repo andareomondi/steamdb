@@ -42,8 +42,9 @@ def fetch_games(request):
 
 """
 Class-based view for the homepage that lists all games from our database.
+This view however will be converted to an APIView in the future to serve JSON data to a Next.js frontend.
 """
 class HomePageView(View):
     def get(self, request):
         games = SteamGame.objects.all()
-        return render(request, 'home.html', {'games': games})
+        return render(request, 'api/home.html', {'games': games})
