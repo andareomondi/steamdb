@@ -26,4 +26,5 @@ urlpatterns = [
     path('fetch-games/', fetch_games, name='fetch_games'),
     path('fetch-game-details/<int:appid>/', fetch_game_details, name='fetch_game_details'),
     path('delete-non-games/', delete_non_games, name='delete_non_games'),
+    path('delete-obvious-non-games/', delete_obvious_non_games, name='delete_obvious_non_games'),
 ]
