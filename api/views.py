@@ -55,13 +55,12 @@ def fetch_game_details(request, appid):
             # Check if details already exist
             if not SteamGameDetail.objects.filter(steam_game=game).exists():
                 SteamGameDetail.objects.create(
+                    name=details.get("name", ""),
                     steam_game=game,
-                    description=details.get("short_description", ""),
+                    required_age=details.get("required_age", ""),
+                    is_free=details.get("is_free", False),
                     developers=", ".join(details.get("developers", [])),
-                    publishers=", ".join(details.get("publishers", [])),
-                    release_date=details.get("release_date", {}).get("date", ""),
-                    genres=", ".join([genre["description"] for genre in details.get("genres", [])]),
-                    price=details.get("price_overview", {}).get("final_formatted", "Free") if details.get("is_free") == False else "Free"
+                    genres=", ".join([genre["description"] for genre in details.get("genres", [])])
                 )
                 game.has_details = True
                 game.save()

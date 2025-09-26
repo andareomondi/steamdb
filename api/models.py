@@ -25,7 +25,6 @@ class SteamGameDetail(models.Model):
     header_image = models.URLField(max_length=500, blank=True, null=True)
     website = models.URLField(max_length=500, blank=True, null=True)
     developers = models.TextField(blank=True, null=True)
-    price_overview = models.JSONField(blank=True, null=True)
     categories = models.JSONField(blank=True, null=True)
     genres = models.JSONField(blank=True, null=True)
 
