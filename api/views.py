@@ -57,6 +57,7 @@ def fetch_game_details(request, appid):
                 SteamGameDetail.objects.create(
                     name=details.get("name", ""),
                     steam_game=game,
+                    is_game=details.get("type", "") == "game",
                     required_age=details.get("required_age", ""),
                     header_image=details.get("header_image", ""),# header image for the game to be used in the frontend
                     about_the_game=details.get("short_description", ""),

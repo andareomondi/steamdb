@@ -24,4 +24,5 @@ urlpatterns = [
     path('games/', game_list, name='game_list'),
     path('games/<int:appid>/', game_detail, name='game_detail'),
     path('fetch-games/', fetch_games, name='fetch_games'),
+    path('fetch-game-details/<int:appid>/', fetch_game_details, name='fetch_game_details'),
 ]
