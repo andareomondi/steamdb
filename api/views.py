@@ -52,6 +52,14 @@ def fetch_game_details(request, appid):
         if app_data.get("success"):
             details = app_data.get("data", {})
             game = SteamGame.objects.get(appid=appid)
+            print(game)
+            print(details)
+            # first check if it's a non-game or game
+            if details.get("type", "") != "game":
+                print("not a game")
+                # delete the game from the SteamGame model if it exists and return a message
+                game.delete()
+                return HttpResponse(f"AppID {appid} is not a game. Deleted from database.")
             # Check if details already exist
             if not SteamGameDetail.objects.filter(steam_game=game).exists():
                 SteamGameDetail.objects.create(
