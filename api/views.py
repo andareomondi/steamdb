@@ -48,6 +48,7 @@ def fetch_game_details(request, appid):
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
+        print(data)
         app_data = data.get(str(appid), {})
         if app_data.get("success"):
             details = app_data.get("data", {})
