@@ -8,7 +8,8 @@
 <body>
 <h1>Welcome to the Game Library</h1>
 {% for game in games %}
-{{forloop.counter}}.
+<br/>
+<h2>Record number: {{forloop.counter}}.</h2>
   <div class="game-card">
     <h4>{{ game.name }}</h4>
     <p>Game id: {{ game.appid }}</p>
