@@ -21,6 +21,7 @@ class SteamGameDetail(models.Model):
     steam_game = models.OneToOneField(SteamGame, on_delete=models.CASCADE, related_name='details')
     required_age = models.CharField(max_length=10, blank=True, null=True)
     is_free = models.BooleanField(default=False)
+    is_game = models.BooleanField(default=True)
     about_the_game = models.TextField(blank=True, null=True)
     header_image = models.URLField(max_length=500, blank=True, null=True)
     website = models.URLField(max_length=500, blank=True, null=True)
