@@ -75,6 +75,19 @@ def fetch_game_details(request, appid):
         return HttpResponse("Failed to fetch game details from the API.", status=500)
 
 """
+API View to delete all the non games from the database both from SteamGame and SteamGameDetail models.
+"""
+def delete_non_games(request):
+    non_games = SteamGameDetail.objects.filter(is_game=False)
+    count = non_games.count()
+    for detail in non_games:
+        # Delete the associated SteamGame entry
+        detail.steam_game.delete()
+        # Delete the SteamGameDetail entry
+        detail.delete()
+    return HttpResponse(f"Deleted {count} non-game entries from the database.")
+
+"""
 Class-based view for the homepage that lists all games from our database.
 This view however will be converted to an APIView in the future to serve JSON data to a Next.js frontend.
 """
