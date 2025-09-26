@@ -58,6 +58,8 @@ def fetch_game_details(request, appid):
                     name=details.get("name", ""),
                     steam_game=game,
                     required_age=details.get("required_age", ""),
+                    header_image=details.get("header_image", ""),# header image for the game to be used in the frontend
+                    about_the_game=details.get("short_description", ""),
                     is_free=details.get("is_free", False),
                     developers=", ".join(details.get("developers", [])),
                     genres=", ".join([genre["description"] for genre in details.get("genres", [])])
