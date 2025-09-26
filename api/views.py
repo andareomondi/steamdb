@@ -41,6 +41,38 @@ def fetch_games(request):
         return HttpResponse("Failed to fetch games from the API.", status=500)
 
 """
+API View to get the details of a specific game from the steam database api endpoint
+"""
+def fetch_game_details(request, appid):
+    url = f"https://store.steampowered.com/api/appdetails?appids={appid}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        app_data = data.get(str(appid), {})
+        if app_data.get("success"):
+            details = app_data.get("data", {})
+            game = SteamGame.objects.get(appid=appid)
+            # Check if details already exist
+            if not SteamGameDetail.objects.filter(steam_game=game).exists():
+                SteamGameDetail.objects.create(
+                    steam_game=game,
+                    description=details.get("short_description", ""),
+                    developers=", ".join(details.get("developers", [])),
+                    publishers=", ".join(details.get("publishers", [])),
+                    release_date=details.get("release_date", {}).get("date", ""),
+                    genres=", ".join([genre["description"] for genre in details.get("genres", [])]),
+                    price=details.get("price_overview", {}).get("final_formatted", "Free") if details.get("is_free") == False else "Free"
+                )
+                game.has_details = True
+                game.save()
+
+            return HttpResponse(f"Details for game {appid} fetched and stored successfully.")
+        else:
+            return HttpResponse(f"No details found for game {appid}.", status=404)
+    else:
+        return HttpResponse("Failed to fetch game details from the API.", status=500)
+
+"""
 Class-based view for the homepage that lists all games from our database.
 This view however will be converted to an APIView in the future to serve JSON data to a Next.js frontend.
 """
