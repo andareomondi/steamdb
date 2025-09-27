@@ -104,32 +104,18 @@ Api view to delete obvious non-games like DLCs, soundtracks, etc from SteamGameD
 """
 def delete_obvious_non_games(request):
     non_game_keywords = ['DLC', 'Soundtrack', 'Demo', 'Video', 'Comic', 'Guide', 'Tool', 'Driver', 'Theme', 'Server', 'Patch', 'Mod', 'Beta', 'Update', 'winui', 'steamworks', 'steamclient']
-    non_games = SteamGameDetail.objects.filter(
-        models.Q(name__icontains=non_game_keywords[0]) |
-        models.Q(name__icontains=non_game_keywords[1]) |
-        models.Q(name__icontains=non_game_keywords[2]) |
-        models.Q(name__icontains=non_game_keywords[3]) |
-        models.Q(name__icontains=non_game_keywords[4]) |
-        models.Q(name__icontains=non_game_keywords[5]) |
-        models.Q(name__icontains=non_game_keywords[6]) |
-        models.Q(name__icontains=non_game_keywords[7]) |
-        models.Q(name__icontains=non_game_keywords[8]) |
-        models.Q(name__icontains=non_game_keywords[9]) |
-        models.Q(name__icontains=non_game_keywords[10]) |
-        models.Q(name__icontains=non_game_keywords[11]) |
-        models.Q(name__icontains=non_game_keywords[12]) |
-        models.Q(name__icontains=non_game_keywords[13]) |
-        models.Q(name__icontains=non_game_keywords[14]) |
-        models.Q(name__icontains=non_game_keywords[15]) |
-        models.Q(name__icontains=non_game_keywords[16])
-
-    )
-    count = non_games.count()
-    for detail in non_games:
-        # Delete the associated SteamGame entry
-        detail.steam_game.delete()
-        # Delete the SteamGameDetail entry
-        detail.delete()
+    q = SteamGame.objects.filter(
+        reduce(or_, (models.Q(name__icontains=kw) for kw in non_game_keywords))
+        )
+    count = q.count()
+    for game in q:
+        if game.has_details:
+            try:
+                detail = SteamGameDetail.objects.get(steam_game=game)
+                detail.delete()
+            except SteamGameDetail.DoesNotExist:
+                pass
+        game.delete()
     return HttpResponse(f"Deleted {count} obvious non-game entries from the database.")
 
 """
