@@ -7,7 +7,6 @@ from django.views import View
 from functools import reduce
 from django.db import models
 from operator import or_
-import operator
 
 # Create your views here.
 """
@@ -105,23 +104,34 @@ Api view to delete obvious non-games like DLCs, soundtracks, etc from SteamGameD
 """
 def delete_obvious_non_games(request):
     non_game_keywords = ['DLC', 'Soundtrack', 'Demo', 'Video', 'Comic', 'Guide', 'Tool', 'Driver', 'Theme', 'Server', 'Patch', 'Mod', 'Beta', 'Update', 'winui', 'steamworks', 'steamclient']
-    
-    # Build Q objects dynamically
-    q_objects = [models.Q(name__icontains=keyword) for keyword in non_game_keywords]
-    
-    # Combine all Q objects with OR
-    combined_q = reduce(operator.or_, q_objects)
-    
-    # Filter records
-    non_games = SteamGameDetail.objects.filter(combined_q)
-    
+    non_games = SteamGameDetail.objects.filter(
+        models.Q(name__icontains=non_game_keywords[0]) |
+        models.Q(name__icontains=non_game_keywords[1]) |
+        models.Q(name__icontains=non_game_keywords[2]) |
+        models.Q(name__icontains=non_game_keywords[3]) |
+        models.Q(name__icontains=non_game_keywords[4]) |
+        models.Q(name__icontains=non_game_keywords[5]) |
+        models.Q(name__icontains=non_game_keywords[6]) |
+        models.Q(name__icontains=non_game_keywords[7]) |
+        models.Q(name__icontains=non_game_keywords[8]) |
+        models.Q(name__icontains=non_game_keywords[9]) |
+        models.Q(name__icontains=non_game_keywords[10]) |
+        models.Q(name__icontains=non_game_keywords[11]) |
+        models.Q(name__icontains=non_game_keywords[12]) |
+        models.Q(name__icontains=non_game_keywords[13]) |
+        models.Q(name__icontains=non_game_keywords[14]) |
+        models.Q(name__icontains=non_game_keywords[15]) |
+        models.Q(name__icontains=non_game_keywords[16])
+
+    )
     count = non_games.count()
-    
-    # If you have proper CASCADE relationships set up in your models,
-    # you can just delete the SteamGameDetail objects and related objects will be deleted automatically
-    deleted_count, deleted_dict = non_games.delete()
-    
-    return HttpResponse(f"Deleted {count} obvious non-game entries from the database. Details: {deleted_dict}")
+    for detail in non_games:
+        # Delete the associated SteamGame entry
+        detail.steam_game.delete()
+        # Delete the SteamGameDetail entry
+        detail.delete()
+    return HttpResponse(f"Deleted {count} obvious non-game entries from the database.")
+
 """
 Class-based view for the homepage that lists all games from our database.
 This view however will be converted to an APIView in the future to serve JSON data to a Next.js frontend.
