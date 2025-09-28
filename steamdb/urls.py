@@ -29,4 +29,5 @@ urlpatterns = [
     path('delete-obvious-non-games/', delete_obvious_non_games, name='delete_obvious_non_games'),
     path('search-games/', search_and_fetch, name='search_games'),
     path('fetch-all-game-details/', fetch_details_for_all, name='fetch_all_game_details'),
+    path('fix-missing-categories/', insert_categories, name='fix_missing_categories'),
 ]

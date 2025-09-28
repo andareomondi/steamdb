@@ -154,6 +154,31 @@ def fetch_details_for_all(request):
 
 
 """
+API view to insert the categories json field that was missing in the fetch_details_for_all function. This will be run only once and for steam games that have details.
+"""
+def insert_categories(request):
+    games_with_details = SteamGame.objects.filter(has_details=True)
+    count = 0
+    for game in games_with_details:
+        try:
+            detail = SteamGameDetail.objects.get(steam_game=game)
+            url = f"https://store.steampowered.com/api/appdetails?appids={game.appid}"
+            response = requests.get(url)
+            if response.status_code == 200:
+                data = response.json()
+                app_data = data.get(str(game.appid), {})
+                if app_data.get("success"):
+                    details = app_data.get("data", {})
+                    categories = details.get("categories", [])
+                    detail.categories = categories
+                    detail.save()
+                    count += 1
+        except SteamGameDetail.DoesNotExist:
+            return HttpResponse(f"Details for game {game.appid} do not exist.", status=404)
+    return HttpResponse(f"Inserted categories for {count} games.")
+
+
+"""
 Class-based view for the homepage that lists all games from our database.
 This view however will be converted to an APIView in the future to serve JSON data to a Next.js frontend.
 """
