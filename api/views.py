@@ -80,7 +80,7 @@ def fetch_game_details(request, appid):
                     game.has_details = True
                     game.save()
                 except:
-                    continue
+                    return HttpResponse(f"Failed to store details for game {appid}.", status=500)
 
             return HttpResponse(f"Details for game {appid} fetched and stored successfully.")
         else:
