@@ -22,6 +22,7 @@ def game_detail(request, appid):
         details = SteamGameDetail.objects.get(steam_game=game)
     return render(request, 'game_detail.html', {'game': game, 'details': details})
 
+
 """
 API View to get the list of games from the steam database api endpoint
 """
@@ -42,6 +43,7 @@ def fetch_games(request):
         return HttpResponse("Games fetched and stored successfully.") 
     else:
         return HttpResponse("Failed to fetch games from the API.", status=500)
+
 
 """
 API View to get the details of a specific game from the steam database api endpoint
@@ -86,6 +88,7 @@ def fetch_game_details(request, appid):
     else:
         return HttpResponse("Failed to fetch game details from the API.", status=500)
 
+
 """
 API View to delete all the non games from the database both from SteamGame and SteamGameDetail models.
 """
@@ -98,6 +101,7 @@ def delete_non_games(request):
         # Delete the SteamGameDetail entry
         detail.delete()
     return HttpResponse(f"Deleted {count} non-game entries from the database.")
+
 
 """
 Api view to delete obvious non-games like DLCs, soundtracks, etc from SteamGameDetail model.
@@ -118,6 +122,7 @@ def delete_obvious_non_games(request):
         game.delete()
     return HttpResponse(f"Deleted {count} obvious non-game entries from the database.")
 
+
 """
 Api view to get the record from a get parameter and search the SteamGame model for matching names. And automatically fetch details for those games if not already present.
 """
@@ -135,6 +140,19 @@ def search_and_fetch(request):
             return HttpResponse("No search query provided.", status=400)
     else:
         return HttpResponse("Invalid request method.", status=405)
+
+
+"""
+API view to fetch details for all games that do not have details yet.
+"""
+def fetch_details_for_all(request):
+    games_without_details = SteamGame.objects.filter(has_details=False)
+    count = games_without_details.count()
+    for game in games_without_details:
+        fetch_game_details(request, game.appid)
+    return HttpResponse(f"Fetched details for {count} games without details.")
+
+
 """
 Class-based view for the homepage that lists all games from our database.
 This view however will be converted to an APIView in the future to serve JSON data to a Next.js frontend.
