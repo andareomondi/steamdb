@@ -119,6 +119,22 @@ def delete_obvious_non_games(request):
     return HttpResponse(f"Deleted {count} obvious non-game entries from the database.")
 
 """
+Api view to get the record from a get parameter and search the SteamGame model for matching names. And automatically fetch details for those games if not already present.
+"""
+def search_and_fetch(request):
+    if request.method == "GET":
+        query = request.GET.get('q', '')
+        if query:
+            games = SteamGame.objects.filter(name__icontains=query)
+            for game in games:
+                if not game.has_details:
+                    fetch_game_details(request, game.appid)
+            return render(request, 'game_list.html', {'games': games})
+        else:
+            return HttpResponse("No search query provided.", status=400)
+    else:
+        return HttpResponse("Invalid request method.", status=405)
+"""
 Class-based view for the homepage that lists all games from our database.
 This view however will be converted to an APIView in the future to serve JSON data to a Next.js frontend.
 """
