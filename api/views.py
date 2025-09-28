@@ -76,6 +76,7 @@ def fetch_game_details(request, appid):
                         is_free=details.get("is_free", False),
                         developers=", ".join(details.get("developers", [])),
                         genres=", ".join([genre["description"] for genre in details.get("genres", [])])
+                        categories=details.get("categories", []),
                     )
                     game.has_details = True
                     game.save()
