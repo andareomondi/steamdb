@@ -107,7 +107,7 @@ def delete_non_games(request):
 Api view to delete obvious non-games like DLCs, soundtracks, etc from SteamGameDetail model.
 """
 def delete_obvious_non_games(request):
-    non_game_keywords = ['DLC', 'Soundtrack', 'Demo', 'Video', 'Comic', 'Guide', 'Tool', 'Driver', 'Theme', 'Server', 'Patch', 'Mod', 'Beta', 'Update', 'winui', 'steamworks', 'steamclient']
+    non_game_keywords = ['DLC', 'Soundtrack', 'Demo', 'Video', 'Comic', 'Guide', 'Tool', 'Driver', 'Theme', 'Server', 'Patch', 'Mod', 'Beta', 'Update', 'winui', 'steamworks', 'steamclient', 'vr', 'vrchat', 'vr game', 'vr experience', 'vr app', 'vr demo', 'steam', 'source', 'sdk', 'workshop', 'editor', 'map', 'level', 'plugin', 'addon', 'extension', 'utility', 'application', 'app', 'software', 'framework', 'library', 'engine', 'platform', 'service', 'toolkit', 'package', 'bundle', 'collection']
     q = SteamGame.objects.filter(
         reduce(or_, (models.Q(name__icontains=kw) for kw in non_game_keywords))
         )
