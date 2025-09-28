@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<body>
+<h1>Seached games</h1>
+{% for game in games %}
+<br/>
+<h2>Record number: {{forloop.counter}}.</h2>
+  <div class="game-card">
+    <h4>{{ game.name }}</h4>
+    <p>Game id: {{ game.appid }}</p>
+    <small>{% if game.has_details %}The game has details{% else %}This game has no more details{% endif %}</small>
+  </div>
+{% endfor %}
+</body>
+</html>
+

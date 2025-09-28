@@ -129,7 +129,8 @@ def search_and_fetch(request):
             for game in games:
                 if not game.has_details:
                     fetch_game_details(request, game.appid)
-            return render(request, 'game_list.html', {'games': games})
+            # This will be replaced with a json response in the future
+            return render(request, 'api/game_list.html', {'games': games})
         else:
             return HttpResponse("No search query provided.", status=400)
     else:
