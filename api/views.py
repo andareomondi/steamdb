@@ -53,13 +53,10 @@ def fetch_game_details(request, appid):
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
-        print(data)
         app_data = data.get(str(appid), {})
         if app_data.get("success"):
             details = app_data.get("data", {})
             game = SteamGame.objects.get(appid=appid)
-            print(game)
-            print(details)
             # first check if it's a non-game or game
             if details.get("type", "") != "game":
                 print("not a game")
@@ -68,19 +65,22 @@ def fetch_game_details(request, appid):
                 return HttpResponse(f"AppID {appid} is not a game. Deleted from database.")
             # Check if details already exist
             if not SteamGameDetail.objects.filter(steam_game=game).exists():
-                SteamGameDetail.objects.create(
-                    name=details.get("name", ""),
-                    steam_game=game,
-                    is_game=details.get("type", "") == "game",
-                    required_age=details.get("required_age", ""),
-                    header_image=details.get("header_image", ""),# header image for the game to be used in the frontend
-                    about_the_game=details.get("short_description", ""),
-                    is_free=details.get("is_free", False),
-                    developers=", ".join(details.get("developers", [])),
-                    genres=", ".join([genre["description"] for genre in details.get("genres", [])])
-                )
-                game.has_details = True
-                game.save()
+                try:
+                    SteamGameDetail.objects.create(
+                        name=details.get("name", ""),
+                        steam_game=game,
+                        is_game=details.get("type", "") == "game",
+                        required_age=details.get("required_age", ""),
+                        header_image=details.get("header_image", ""),# header image for the game to be used in the frontend
+                        about_the_game=details.get("short_description", ""),
+                        is_free=details.get("is_free", False),
+                        developers=", ".join(details.get("developers", [])),
+                        genres=", ".join([genre["description"] for genre in details.get("genres", [])])
+                    )
+                    game.has_details = True
+                    game.save()
+                except:
+                    return HttpResponse(f"Failed to store details for game {appid}.", status=500)
 
             return HttpResponse(f"Details for game {appid} fetched and stored successfully.")
         else:
@@ -107,7 +107,7 @@ def delete_non_games(request):
 Api view to delete obvious non-games like DLCs, soundtracks, etc from SteamGameDetail model.
 """
 def delete_obvious_non_games(request):
-    non_game_keywords = ['DLC', 'Soundtrack', 'Demo', 'Video', 'Comic', 'Guide', 'Tool', 'Driver', 'Theme', 'Server', 'Patch', 'Mod', 'Beta', 'Update', 'winui', 'steamworks', 'steamclient', 'vr', 'vrchat', 'vr game', 'vr experience', 'vr app', 'vr demo', 'steam', 'source', 'sdk', 'workshop', 'editor', 'map', 'level', 'plugin', 'addon', 'extension', 'utility', 'application', 'app', 'software', 'framework', 'library', 'engine', 'platform', 'service', 'toolkit', 'package', 'bundle', 'collection']
+    non_game_keywords = ['DLC', 'Soundtrack', 'Demo', 'Video', 'Comic', 'Guide', 'Tool', 'Driver', 'Theme', 'Server', 'Patch', 'Mod', 'Beta', 'Update', 'winui', 'steamworks', 'steamclient', 'vr', 'vrchat', 'vr game', 'vr experience', 'vr app', 'vr demo', 'steam', 'source', 'sdk', 'workshop', 'editor', 'map', 'level', 'plugin', 'addon', 'extension', 'utility', 'application', 'app', 'software', 'framework', 'library', 'engine', 'platform', 'service', 'toolkit', 'package', 'bundle', 'collection', 'playtest', 'test', 'testing', 'experiment', 'experimental', 'prototype', 'concept', 'idea', 'vision', 'demo reel', 'showcase', 'preview', 'trailer', 'teaser', 'clip', 'footage', 'sneak peek', 'behind the scenes', 'making of', 'interview', 'featurette', 'documentary', 'deleted scenes', 'client', 'server', 'multiplayer', 'singleplayer', 'co-op', 'cooperative', 'online', 'offline', 'lan', 'local', 'cross-platform', 'crossplay', 'modding', 'customization', 'skins', 'themes', 'avatars', 'emotes', 'badges', 'achievements', 'leaderboards', 'stats', 'progression', 'inventory', 'marketplace', 'trading', 'economy', 'currency', 'microtransactions', 'in-app purchases']
     q = SteamGame.objects.filter(
         reduce(or_, (models.Q(name__icontains=kw) for kw in non_game_keywords))
         )
